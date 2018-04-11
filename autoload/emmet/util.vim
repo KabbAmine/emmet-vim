@@ -345,5 +345,5 @@ function! emmet#util#getcurpos() abort
 endfunction
 
 function! emmet#util#closePopup() abort
-  return pumvisible() ? "\<c-e>" : ''
+  return pumvisible() ? "\<c-y>" : ''
 endfunction
