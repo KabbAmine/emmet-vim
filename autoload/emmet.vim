@@ -967,13 +967,19 @@ function! emmet#completeTag(findstart, base) abort
     let snippets = emmet#getResource(type, 'snippets', {})
     for item in keys(snippets)
       if stridx(item, a:base) !=# -1
-        call add(res, substitute(item, '\${cursor}\||', '', 'g'))
+        call add(res, {
+                    \   'word': substitute(item, '\${cursor}\||', '', 'g'),
+                    \   'menu': '[emmet]'
+                    \ })
       endif
     endfor
     let aliases = emmet#getResource(type, 'aliases', {})
     for item in values(aliases)
       if stridx(item, a:base) !=# -1
-        call add(res, substitute(item, '\${cursor}\||', '', 'g'))
+        call add(res, {
+                    \   'word': substitute(item, '\${cursor}\||', '', 'g'),
+                    \   'menu': '[emmet]'
+                    \ })
       endif
     endfor
     return res
