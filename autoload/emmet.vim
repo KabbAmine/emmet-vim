@@ -1,7 +1,7 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 26-Jul-2015.
+" Last Change: 11-Apr-2018.
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
@@ -966,7 +966,7 @@ function! emmet#completeTag(findstart, base) abort
 
     let snippets = emmet#getResource(type, 'snippets', {})
     for item in keys(snippets)
-      if stridx(item, a:base) !=# -1
+      if stridx(item, a:base) ==# 0
         call add(res, {
                     \   'word': substitute(item, '\${cursor}\||', '', 'g'),
                     \   'menu': '[emmet]'
@@ -975,7 +975,7 @@ function! emmet#completeTag(findstart, base) abort
     endfor
     let aliases = emmet#getResource(type, 'aliases', {})
     for item in values(aliases)
-      if stridx(item, a:base) !=# -1
+      if stridx(item, a:base) ==# 0
         call add(res, {
                     \   'word': substitute(item, '\${cursor}\||', '', 'g'),
                     \   'menu': '[emmet]'
