@@ -6,7 +6,7 @@
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 
-let s:filtermx = '|\(\%(bem\|html\|haml\|slim\|e\|c\|s\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
+let s:filtermx = '|\(\%(bem\|html\|blade\|haml\|slim\|e\|c\|s\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
 
 function! emmet#getExpandos(type, key) abort
   let expandos = emmet#getResource(a:type, 'expandos', {})
@@ -182,17 +182,9 @@ endfunction
 function! s:itemno(itemno, current) abort
   let current = a:current
   if current.basedirect > 0
-    if current.basevalue ==# 0
-      return a:itemno
-    else
-      return current.basevalue - 1 + a:itemno
-    endif
+    return current.basevalue - 1 + a:itemno
   else
-    if current.basevalue ==# 0
-      return current.multiplier - 1 - a:itemno
-    else
-      return current.multiplier + current.basevalue - 2 - a:itemno
-    endif
+    return current.multiplier + current.basevalue - 2 - a:itemno
   endif
 endfunction
 
@@ -384,10 +376,23 @@ endfunction
 
 function! emmet#getFileType(...) abort
   let flg = get(a:000, 0, 0)
-  let type = ''
-
+  
   if has_key(s:emmet_settings, &filetype)
-    let type = &filetype
+    return &filetype
+  endif 
+
+  let pos = emmet#util#getcurpos()
+  let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
+  if type =~? '^css'
+    let type = 'css'
+  elseif type =~? '^html'
+    let type = 'html'
+  elseif type =~? '^jsx'
+    let type = 'jsx'
+  elseif type =~? '^js\w' || type =~? '^javascript'
+    let type = 'javascript'
+  elseif type =~? '^xml'
+    let type = 'xml'
   else
     let types = split(&filetype, '\.')
     for part in types
@@ -407,24 +412,8 @@ function! emmet#getFileType(...) abort
       endif
     endfor
   endif
-  if type ==# 'html'
-    let pos = emmet#util#getcurpos()
-    let type = synIDattr(synID(pos[1], pos[2], 1), 'name')
-    if type =~# '^css\w'
-      let type = 'css'
-    endif
-    if type =~# '^html\w'
-      let type = 'html'
-    endif
-    if type =~# '^javaScript'
-      let type = 'javascript'
-    endif
-    if len(type) ==# 0 && type =~# '^xml'
-      let type = 'xml'
-    endif
-  endif
-  if len(type) ==# 0 | let type = 'html' | endif
-  return type
+
+  return len(type) == 0 ? 'html' : type
 endfunction
 
 function! emmet#getDollarExprs(expand) abort
@@ -1895,6 +1884,12 @@ let s:emmet_settings = {
 \    'elm': {
 \        'indentation': '    ',
 \        'extends': 'html',
+\    },
+\    'xml': {
+\        'extends': 'html',
+\        'empty_elements': '',
+\        'block_elements': '',
+\        'inline_elements': '',
 \    },
 \    'htmldjango': {
 \        'extends': 'html',
